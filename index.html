@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PWB loonkostcalculator</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="intro">
+        <div>
+          <p class="eyebrow">Barema 141/148</p>
+          <h1>PWB loonkostcalculator</h1>
+          <p class="intro-copy">Bereken snel budget, inzet en kostprijs.</p>
+        </div>
+        <div class="source-pill" id="dataStatus">Tarieven laden...</div>
+      </section>
+
+      <section class="workspace" aria-label="Calculator">
+        <form class="controls" id="calculatorForm">
+          <fieldset class="field">
+            <legend>Ik wil berekenen</legend>
+            <div class="segmented segmented-wide" role="radiogroup" aria-label="Rekenmodus">
+              <label>
+                <input type="radio" name="calculationMode" value="budget" checked>
+                <span>Budget</span>
+              </label>
+              <label>
+                <input type="radio" name="calculationMode" value="cost">
+                <span>Kostprijs</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="field" id="budgetField">
+            <label for="budgetInput">Jaarbudget</label>
+            <div class="money-input">
+              <span>EUR</span>
+              <input id="budgetInput" name="budget" type="text" inputmode="decimal" autocomplete="off" value="3000">
+            </div>
+          </div>
+
+          <div class="field is-hidden" id="unitsField">
+            <label for="unitsInput" id="unitsInputLabel">Gewenste lestijden per week</label>
+            <div class="quantity-input">
+              <span id="unitsPrefix">LT/week</span>
+              <input id="unitsInput" name="units" type="text" inputmode="decimal" autocomplete="off" value="2">
+            </div>
+          </div>
+
+          <fieldset class="field" id="personnelTypeField">
+            <legend>Personeelsstatuut</legend>
+            <div class="segmented" role="radiogroup" aria-label="Personeelsstatuut">
+              <label>
+                <input type="radio" name="personnelType" value="tijdelijk" checked>
+                <span>Tijdelijk</span>
+              </label>
+              <label>
+                <input type="radio" name="personnelType" value="vast">
+                <span>Vast</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="field">
+            <label for="allowanceSelect">Toelage</label>
+            <select id="allowanceSelect" name="allowance">
+              <option value="standplaats">Standplaatstoelage</option>
+              <option value="haardgeld">Haardgeldtoelage</option>
+            </select>
+            <details class="info-box">
+              <summary>Wat betekent dit?</summary>
+              <p><strong>Haardgeldtoelage</strong>, ook haardtoelage genoemd, is mogelijk voor gehuwde, feitelijk of wettelijk samenwonende personeelsleden en voor alleenstaande ouders met minstens 1 kind dat recht geeft op kinderbijslag, als ook aan de salarisvoorwaarden voldaan is.</p>
+              <p><strong>Standplaatstoelage</strong> is de toelage voor personeelsleden die geen haardtoelage ontvangen, maar wel aan de salarisvoorwaarden voldoen.</p>
+              <p>De tool rekent met de gekozen tabel. Laat bij twijfel het secretariaat of de personeelsdienst bepalen welke toelage van toepassing is.</p>
+              <a href="https://www.vlaanderen.be/onderwijsprofessionals/werken-in-het-onderwijs/salaris-onderwijspersoneel/vergoedingen-en-toelagen-voor-onderwijspersoneel/haard-en-standplaatstoelage-voor-onderwijspersoneel" target="_blank" rel="noopener">Bron: Vlaanderen.be</a>
+            </details>
+          </div>
+
+          <fieldset class="field">
+            <legend>Noemer</legend>
+            <div class="segmented" role="radiogroup" aria-label="Noemer">
+              <label>
+                <input type="radio" name="denominator" value="24" checked>
+                <span>/24</span>
+              </label>
+              <label>
+                <input type="radio" name="denominator" value="36">
+                <span>/36</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="field">
+            <label for="seniorityInput">Anciënniteit</label>
+            <div class="stepper">
+              <button type="button" id="seniorityDown" aria-label="Minder anciënniteit">-</button>
+              <input id="seniorityInput" name="seniority" type="number" min="0" max="36" step="1" value="1">
+              <button type="button" id="seniorityUp" aria-label="Meer anciënniteit">+</button>
+            </div>
+          </div>
+        </form>
+
+        <section class="result-panel" aria-live="polite">
+          <div class="result-header">
+            <p id="unitLabel">Lestijden per week</p>
+            <strong id="mainResult">-</strong>
+          </div>
+
+          <div class="metrics">
+            <div>
+              <span id="metricOneLabel">Volledig inzetbaar</span>
+              <strong id="wholeUnits">-</strong>
+            </div>
+            <div>
+              <span id="metricTwoLabel">Kostprijs per jaar</span>
+              <strong id="annualCost">-</strong>
+            </div>
+            <div>
+              <span id="metricThreeLabel">Restbudget na afronding</span>
+              <strong id="remainingBudget">-</strong>
+            </div>
+          </div>
+
+          <div class="explanation" id="calculationLine">Vul een budget in om te berekenen.</div>
+
+          <div class="limit-line" id="maxSeniorityLine"></div>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
