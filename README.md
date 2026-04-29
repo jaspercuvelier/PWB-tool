@@ -12,6 +12,13 @@ python3 -m http.server 8000
 
 Open daarna `http://127.0.0.1:8000/`.
 
+## Berekening delen via link
+
+De calculator schrijft de huidige invoer automatisch in de URL (query parameters).
+Zo kan je een berekening doorsturen als een lange link: wie de link opent, ziet meteen dezelfde instellingen en uitkomstmodus.
+
+In de resultatensectie staat ook een knop `Kopieer deellink` om die URL snel op het klembord te zetten.
+
 ## Publiceren op GitHub Pages
 
 1. Zet deze bestanden in een GitHub-repository.

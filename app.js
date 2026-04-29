@@ -26,10 +26,13 @@ const elements = {
   remainingBudget: document.querySelector("#remainingBudget"),
   calculationLine: document.querySelector("#calculationLine"),
   maxSeniorityLine: document.querySelector("#maxSeniorityLine"),
+  shareLinkButton: document.querySelector("#shareLinkButton"),
+  shareFeedback: document.querySelector("#shareFeedback"),
 };
 
 let rows = [];
 let groupedRows = new Map();
+let shareFeedbackTimer;
 
 const euroFormatter = new Intl.NumberFormat("nl-BE", {
   style: "currency",
@@ -77,6 +80,7 @@ function wireEvents() {
 
   elements.seniorityDown.addEventListener("click", () => stepSeniority(-1));
   elements.seniorityUp.addEventListener("click", () => stepSeniority(1));
+  elements.shareLinkButton.addEventListener("click", copyShareLink);
 
   elements.budget.addEventListener("blur", () => {
     const budget = parseFlexibleNumber(elements.budget.value);
@@ -263,10 +267,91 @@ function updateResult() {
 
   if (mode === "cost") {
     updateCostResult(seniority, denominator);
-    return;
+  } else {
+    updateBudgetResult(seniority, denominator);
   }
 
-  updateBudgetResult(seniority, denominator);
+  syncQueryParams(mode, denominator, seniority);
+}
+
+function syncQueryParams(mode, denominator, seniority) {
+  const params = new URLSearchParams();
+  const personnelType = document.querySelector("input[name='personnelType']:checked")?.value;
+  const allowance = elements.allowance.value;
+  const budget = normalizeNumberForQuery(elements.budget.value);
+  const units = normalizeNumberForQuery(elements.units.value);
+
+  params.set("mode", mode);
+  params.set("denominator", denominator);
+  params.set("seniority", String(seniority));
+
+  if (personnelType === "tijdelijk" || personnelType === "vast") {
+    params.set("type", personnelType);
+  }
+
+  if (allowance === "standplaats" || allowance === "haardgeld") {
+    params.set("allowance", allowance);
+  }
+
+  if (personnelType && allowance) {
+    params.set("table", `${personnelType}-${allowance}`);
+  }
+
+  if (mode === "budget") {
+    if (budget !== null) {
+      params.set("budget", budget);
+    }
+  } else if (units !== null) {
+    params.set("units", units);
+  }
+
+  const nextUrl = `${window.location.pathname}?${params.toString()}`;
+  window.history.replaceState(null, "", nextUrl);
+}
+
+function normalizeNumberForQuery(value) {
+  const parsed = parseFlexibleNumber(value);
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    return null;
+  }
+
+  const rounded = Math.round(parsed * 100) / 100;
+  return String(rounded).replace(/\.0+$/, "").replace(/(\.\d*?)0+$/, "$1");
+}
+
+async function copyShareLink() {
+  const link = window.location.href;
+
+  try {
+    await navigator.clipboard.writeText(link);
+    setShareFeedback("Deellink gekopieerd.");
+  } catch (error) {
+    const fallbackInput = document.createElement("input");
+    fallbackInput.value = link;
+    document.body.appendChild(fallbackInput);
+    fallbackInput.select();
+
+    const copied = document.execCommand("copy");
+    fallbackInput.remove();
+
+    if (copied) {
+      setShareFeedback("Deellink gekopieerd.");
+    } else {
+      setShareFeedback("Kopieren lukt niet automatisch. Kopieer de URL uit de adresbalk.");
+    }
+
+    if (error) {
+      console.warn(error);
+    }
+  }
+}
+
+function setShareFeedback(message) {
+  elements.shareFeedback.textContent = message;
+  window.clearTimeout(shareFeedbackTimer);
+  shareFeedbackTimer = window.setTimeout(() => {
+    elements.shareFeedback.textContent = "";
+  }, 2600);
 }
 
 function updateBudgetResult(seniority, denominator) {

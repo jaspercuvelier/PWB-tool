@@ -376,6 +376,35 @@ select {
   color: var(--warning);
 }
 
+.share-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.share-button {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  min-height: 42px;
+  background: var(--surface-strong);
+  color: var(--accent-dark);
+  padding: 0 14px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.share-button:hover {
+  background: #eef8f5;
+}
+
+.share-feedback {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
 @media (max-width: 820px) {
   .app-shell {
     width: min(calc(100% - 22px), 620px);
